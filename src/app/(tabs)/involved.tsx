@@ -35,7 +35,7 @@ export default function InvolvedScreen() {
   const [mode, setMode] = useState<Mode>('volunteer');
 
   return (
-    <Screen topInset>
+    <Screen>
       <SectionHeader
         eyebrow="Get Involved"
         title="Partner With the Mission"

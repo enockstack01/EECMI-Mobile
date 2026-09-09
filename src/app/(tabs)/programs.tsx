@@ -14,7 +14,7 @@ export default function ProgramsScreen() {
   const theme = useTheme();
 
   return (
-    <Screen topInset>
+    <Screen>
       <SectionHeader
         eyebrow="Our Programs"
         title="Six Core Ministry Programs"

@@ -8,8 +8,9 @@
     "icon": "./assets/images/icon.png",
     "scheme": "eecmi",
     "userInterfaceStyle": "automatic",
+    "backgroundColor": "#FFFFFF",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/images/icon.png",
       "supportsTablet": true,
       "bundleIdentifier": "org.eecmi.app",
       "buildNumber": "1"
@@ -18,9 +19,8 @@
       "package": "org.eecmi.app",
       "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundColor": "#1B4332",
+        "backgroundColor": "#FBF7F0",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false
@@ -36,7 +36,13 @@
         {
           "backgroundColor": "#1B4332",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "dark": {
+            "backgroundColor": "#0E1512",
+            "image": "./assets/images/splash-icon.png",
+            "imageWidth": 200
+          }
         }
       ]
     ],

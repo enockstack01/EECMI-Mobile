@@ -41,7 +41,7 @@ export default function ContactScreen() {
   const theme = useTheme();
 
   return (
-    <Screen topInset>
+    <Screen>
       <SectionHeader
         eyebrow="Contact"
         title="Reach the EECMI Team"

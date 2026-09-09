@@ -26,7 +26,7 @@ export default function NewsScreen() {
   const rest = articles.filter((a) => a !== featured);
 
   return (
-    <Screen topInset>
+    <Screen>
       <SectionHeader
         eyebrow="Newsroom"
         title="Stories of Transformation"

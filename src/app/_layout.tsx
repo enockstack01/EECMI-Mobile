@@ -6,10 +6,12 @@ import {
   type Theme,
 } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { AppHeader } from '@/components/ui/app-header';
 import { Brand, Colors } from '@/constants/theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -42,17 +44,23 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={navTheme(scheme)}>
+        <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
         <Stack
           screenOptions={{
-            headerShown: false,
-            headerTintColor: Colors[scheme].primary,
-            headerStyle: { backgroundColor: Colors[scheme].background },
+            headerShown: true,
             contentStyle: { backgroundColor: Colors[scheme].background },
+            header: ({ options, navigation, back }) => (
+              <AppHeader
+                variant="stack"
+                title={options.title}
+                onBack={back ? navigation.goBack : undefined}
+              />
+            ),
           }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="program/[id]" options={{ headerShown: true, title: 'Program' }} />
-          <Stack.Screen name="about" options={{ headerShown: true, title: 'About EECMI' }} />
-          <Stack.Screen name="resources" options={{ headerShown: true, title: 'Resources' }} />
+          <Stack.Screen name="program/[id]" options={{ title: 'Program' }} />
+          <Stack.Screen name="about" options={{ title: 'About EECMI' }} />
+          <Stack.Screen name="resources" options={{ title: 'Resources' }} />
         </Stack>
       </ThemeProvider>
     </GestureHandlerRootView>

@@ -18,7 +18,7 @@ export default function HomeScreen() {
   const theme = useTheme();
 
   return (
-    <Screen topInset>
+    <Screen>
       <Hero
         eyebrow="Christ Centered Ministry in Uganda"
         title="Transforming Lives Through Christ Centered Outreach"
