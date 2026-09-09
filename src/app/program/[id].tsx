@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Screen } from '@/components/ui/screen';
 import { Typography } from '@/components/ui/typography';
-import { Programs } from '@/constants/content';
 import { Spacing } from '@/constants/theme';
+import { useSiteContent } from '@/hooks/use-site-content';
 
 export default function ProgramDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const program = Programs.find((p) => p.id === id);
+  const { programs } = useSiteContent();
+  const program = programs.find((p) => p.id === id);
 
   if (!program) {
     return (

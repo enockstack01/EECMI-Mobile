@@ -8,12 +8,13 @@ import { ScriptureBanner } from '@/components/ui/scripture-banner';
 import { Screen } from '@/components/ui/screen';
 import { SectionHeader } from '@/components/ui/section-header';
 import { Typography } from '@/components/ui/typography';
-import { AboutFacts, Leadership, Org, Values, Vision } from '@/constants/content';
 import { Spacing } from '@/constants/theme';
+import { useSiteContent } from '@/hooks/use-site-content';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function AboutScreen() {
   const theme = useTheme();
+  const { aboutFacts: AboutFacts, leadership: Leadership, org: Org, values: Values, vision: Vision } = useSiteContent();
 
   return (
     <Screen>

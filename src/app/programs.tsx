@@ -6,12 +6,13 @@ import { Card } from '@/components/ui/card';
 import { Screen } from '@/components/ui/screen';
 import { SectionHeader } from '@/components/ui/section-header';
 import { Typography } from '@/components/ui/typography';
-import { Programs } from '@/constants/content';
 import { Spacing } from '@/constants/theme';
+import { useSiteContent } from '@/hooks/use-site-content';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function ProgramsScreen() {
   const theme = useTheme();
+  const { programs: Programs } = useSiteContent();
 
   return (
     <Screen>

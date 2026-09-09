@@ -17,28 +17,24 @@ import { Screen } from '@/components/ui/screen';
 import { SectionHeader } from '@/components/ui/section-header';
 import { TextField } from '@/components/ui/text-field';
 import { Typography } from '@/components/ui/typography';
-import { Org } from '@/constants/content';
 import { Spacing } from '@/constants/theme';
+import { useSiteContent } from '@/hooks/use-site-content';
 import { useTheme } from '@/hooks/use-theme';
 import { ApiError, subscribeNewsletter, submitContact } from '@/lib/api';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 type Status = { tone: 'success' | 'error'; message: string } | null;
 
-const CONTACT_METHODS: {
-  icon: keyof typeof Ionicons.glyphMap;
-  label: string;
-  value: string;
-  url: string;
-}[] = [
-  { icon: 'call', label: 'Phone', value: Org.phone, url: `tel:${Org.phoneDial}` },
-  { icon: 'logo-whatsapp', label: 'WhatsApp', value: Org.phone, url: Org.whatsapp },
-  { icon: 'mail', label: 'Email', value: Org.email, url: `mailto:${Org.email}` },
-  { icon: 'globe', label: 'Website', value: 'eecmi-platform.onrender.com', url: Org.website },
-];
-
 export default function ContactScreen() {
   const theme = useTheme();
+  const { org: Org } = useSiteContent();
+
+  const CONTACT_METHODS: { icon: keyof typeof Ionicons.glyphMap; label: string; value: string; url: string }[] = [
+    { icon: 'call', label: 'Phone', value: Org.phone, url: `tel:${Org.phoneDial}` },
+    { icon: 'logo-whatsapp', label: 'WhatsApp', value: Org.phone, url: Org.whatsapp },
+    { icon: 'mail', label: 'Email', value: Org.email, url: `mailto:${Org.email}` },
+    { icon: 'globe', label: 'Website', value: Org.website.replace(/^https?:\/\//, ''), url: Org.website },
+  ];
 
   return (
     <Screen>
