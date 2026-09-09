@@ -42,7 +42,6 @@ export const AboutFacts: { label: string; value: string }[] = [
   { label: 'Founded', value: 'Kampala, Uganda' },
   { label: 'Focus', value: 'Prison Ministry & Community Development' },
   { label: 'Status', value: 'Non Profit Christian Ministry' },
-  { label: 'Reach', value: 'Uganda & East Africa' },
   { label: 'Programs', value: '6 Core Ministry Programs' },
   { label: 'Beneficiaries', value: 'Prisoners, Youth, Women, Children' },
 ];

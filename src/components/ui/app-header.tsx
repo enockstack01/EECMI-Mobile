@@ -10,6 +10,8 @@ export type HeaderAction = {
   icon: keyof typeof Ionicons.glyphMap;
   onPress: () => void;
   accessibilityLabel: string;
+  /** Show a small dot on the icon (e.g. unread notifications). */
+  badge?: boolean;
 };
 
 type AppHeaderProps = {
@@ -92,6 +94,9 @@ export function AppHeader({ variant = 'section', title, onBack, action }: AppHea
                 pressed && styles.pressed,
               ]}>
               <Ionicons name={action.icon} size={18} color={theme.primary} />
+              {action.badge ? (
+                <View style={[styles.badge, { backgroundColor: theme.accent, borderColor: theme.background }]} />
+              ) : null}
             </Pressable>
           ) : null}
         </View>
@@ -156,6 +161,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  badge: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    width: 9,
+    height: 9,
+    borderRadius: 5,
+    borderWidth: 1.5,
   },
   pressed: { opacity: 0.6 },
 });

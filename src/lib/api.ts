@@ -26,12 +26,20 @@ class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<ApiResult<T>> {
+async function request<T>(
+  path: string,
+  init?: RequestInit & { token?: string | null },
+): Promise<ApiResult<T>> {
+  const { token, ...rest } = init ?? {};
   let res: Response;
   try {
     res = await fetch(`${API_BASE_URL}${path}`, {
-      ...init,
-      headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
+      ...rest,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(rest.headers ?? {}),
+      },
     });
   } catch {
     throw new ApiError('Network error. Check your connection and try again.');
@@ -51,7 +59,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<ApiResult<T
   return body ?? { success: true };
 }
 
-export { ApiError };
+export { ApiError, request };
 
 // --- Form submissions -------------------------------------------------------
 
@@ -143,3 +151,108 @@ export type PublicPrayer = {
 export function getPublicPrayers() {
   return request<PublicPrayer[]>('/api/prayer/public', { method: 'GET' });
 }
+
+// --- Devotions -----------------------------------------------------------
+
+export type Devotion = {
+  id: string;
+  title: string;
+  series?: string;
+  description?: string;
+  scriptureRef?: string;
+  body?: string;
+  type: 'text' | 'pdf' | 'audio' | 'video' | 'link';
+  fileUrl?: string;
+  externalUrl?: string;
+  coverImageUrl?: string;
+  author?: string;
+  publishedAt?: string;
+};
+
+export function getDevotions() {
+  return request<Devotion[]>('/api/devotions', { method: 'GET' });
+}
+export function getDevotion(id: string) {
+  return request<Devotion>(`/api/devotions/${id}`, { method: 'GET' });
+}
+export function recordDevotionDownload(id: string) {
+  return request(`/api/devotions/${id}/download`, { method: 'POST' }).catch(() => undefined);
+}
+
+// --- News & Updates ----------------------------------------------------
+
+export type NewsPost = {
+  id: string;
+  title: string;
+  category?: string;
+  excerpt?: string;
+  content?: string;
+  author?: string;
+  readTime?: string;
+  imageUrl?: string;
+  featured?: boolean;
+  publishedAt?: string;
+  createdAt?: string;
+};
+
+export function getNews() {
+  return request<NewsPost[]>('/api/news', { method: 'GET' });
+}
+export function getNewsPost(id: string) {
+  return request<NewsPost>(`/api/news/${id}`, { method: 'GET' });
+}
+
+// --- Site content ----------------------------------------------------
+
+export function getSiteContent() {
+  return request<Record<string, unknown>>('/api/content', { method: 'GET' });
+}
+
+// --- Signed-in (token required) --------------------------------------
+
+export type MeProfile = {
+  id: string;
+  name: string;
+  email: string;
+  imageUrl?: string;
+  role: string;
+  phone: string;
+  location: string;
+  interests: string[];
+  notifyInApp: boolean;
+};
+
+export type ActivityItem = {
+  kind: string;
+  id: string;
+  title: string;
+  status: string;
+  createdAt: string;
+};
+
+export type AppNotification = {
+  id: string;
+  type: 'update' | 'devotion' | 'system';
+  title: string;
+  body?: string;
+  linkPath?: string;
+  read: boolean;
+  createdAt: string;
+};
+
+export const getMe = (token: string) => request<MeProfile>('/api/me', { method: 'GET', token });
+export const patchMe = (token: string, body: Partial<Pick<MeProfile, 'phone' | 'location' | 'interests' | 'notifyInApp'>>) =>
+  request<Partial<MeProfile>>('/api/me', { method: 'PATCH', token, body: JSON.stringify(body) });
+export const getMyActivity = (token: string) => request<ActivityItem[]>('/api/me/activity', { method: 'GET', token });
+export const getSavedDevotions = (token: string) => request<Devotion[]>('/api/me/devotions', { method: 'GET', token });
+export const saveDevotion = (token: string, id: string) =>
+  request<{ saved: boolean }>(`/api/me/devotions/${id}/save`, { method: 'POST', token });
+export const unsaveDevotion = (token: string, id: string) =>
+  request<{ saved: boolean }>(`/api/me/devotions/${id}/save`, { method: 'DELETE', token });
+
+export const getNotifications = (token: string) =>
+  request<AppNotification[]>('/api/notifications', { method: 'GET', token });
+export const getUnreadCount = (token: string) =>
+  request<{ count: number }>('/api/notifications/unread-count', { method: 'GET', token });
+export const markNotificationsRead = (token: string, ids?: string[]) =>
+  request('/api/notifications/read', { method: 'POST', token, body: JSON.stringify(ids ? { ids } : {}) });
