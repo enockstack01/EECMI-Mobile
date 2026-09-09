@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { useColorScheme } from 'react-native';
 
 import { AppHeader } from '@/components/ui/app-header';
-import { Colors, Fonts } from '@/constants/theme';
+import { Fonts } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -16,8 +16,7 @@ const TABS: { name: string; title: string; icon: IconName }[] = [
 ];
 
 export default function TabsLayout() {
-  const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
-  const c = Colors[scheme];
+  const c = useTheme();
 
   return (
     <Tabs
@@ -29,13 +28,15 @@ export default function TabsLayout() {
             title={options.title ?? ''}
           />
         ),
+        sceneStyle: { backgroundColor: c.background },
+        tabBarHideOnKeyboard: true,
         tabBarActiveTintColor: c.primary,
         tabBarInactiveTintColor: c.textSecondary,
         tabBarStyle: {
           backgroundColor: c.background,
           borderTopColor: c.border,
-          paddingTop: 6,
         },
+        tabBarItemStyle: { paddingVertical: 4 },
         tabBarLabelStyle: { fontFamily: Fonts.sans, fontSize: 11, fontWeight: '600' },
       }}>
       {TABS.map((tab) => (
@@ -45,7 +46,11 @@ export default function TabsLayout() {
           options={{
             title: tab.title,
             tabBarIcon: ({ color, size, focused }) => (
-              <Ionicons name={focused ? tab.icon : (`${tab.icon}-outline` as IconName)} size={size} color={color} />
+              <Ionicons
+                name={focused ? tab.icon : (`${tab.icon}-outline` as IconName)}
+                size={size}
+                color={color}
+              />
             ),
           }}
         />

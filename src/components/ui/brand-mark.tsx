@@ -10,15 +10,20 @@ type BrandMarkProps = {
   size?: number;
   /** Draw the emblem on a rounded cream tile (used in headers on any background). */
   tile?: boolean;
+  /** Flatten the emblem to a single colour (for watermarks / monochrome contexts). */
+  tint?: string;
+  /** Purely decorative — hide from the accessibility tree. */
+  decorative?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
 /** The EECMI emblem (three figures under an arc), the app's visual signature. */
-export function BrandMark({ size = 28, tile = false, style }: BrandMarkProps) {
+export function BrandMark({ size = 28, tile = false, tint, decorative, style }: BrandMarkProps) {
   const box = tile ? Math.round(size * 1.34) : size;
 
   return (
     <View
+      pointerEvents={decorative ? 'none' : 'auto'}
       style={[
         { width: box, height: box, alignItems: 'center', justifyContent: 'center' },
         tile && [styles.tile, { borderRadius: Math.min(Radius.md, box / 3) }],
@@ -28,7 +33,11 @@ export function BrandMark({ size = 28, tile = false, style }: BrandMarkProps) {
         source={source}
         style={{ width: size, height: size }}
         contentFit="contain"
-        accessibilityLabel="EECMI"
+        tintColor={tint}
+        accessible={!decorative}
+        accessibilityElementsHidden={decorative}
+        importantForAccessibility={decorative ? 'no-hide-descendants' : 'auto'}
+        accessibilityLabel={decorative ? undefined : 'EECMI'}
       />
     </View>
   );

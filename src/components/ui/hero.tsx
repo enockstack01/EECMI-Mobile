@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { BrandMark } from '@/components/ui/brand-mark';
 import { Button } from '@/components/ui/button';
 import { Brand, Radius, Spacing } from '@/constants/theme';
 
@@ -17,6 +18,7 @@ type HeroProps = {
 export function Hero({ eyebrow, title, subtitle, actions, children }: HeroProps) {
   return (
     <View style={styles.hero}>
+      <BrandMark size={190} tint={Brand.forestMid} decorative style={styles.watermark} />
       <View style={styles.accentBar} />
       <View style={styles.body}>
         {eyebrow ? <Text style={styles.eyebrow}>{eyebrow}</Text> : null}
@@ -46,6 +48,12 @@ const styles = StyleSheet.create({
     backgroundColor: Brand.forestDark,
     borderRadius: Radius.lg,
     overflow: 'hidden',
+  },
+  watermark: {
+    position: 'absolute',
+    right: -46,
+    bottom: -52,
+    opacity: 0.16,
   },
   accentBar: { height: 4, backgroundColor: Brand.gold },
   body: { padding: Spacing.four, gap: Spacing.three },

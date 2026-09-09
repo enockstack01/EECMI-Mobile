@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 type ScreenProps = {
@@ -35,7 +35,9 @@ export function Screen({
 
   const padding: ViewStyle = {
     paddingTop: topInset ? insets.top + Spacing.three : Spacing.three,
-    paddingBottom: insets.bottom + BottomTabInset + Spacing.four,
+    // React Navigation already lays the scene out above the tab bar; this is
+    // just the home-indicator inset plus breathing room at the end of a scroll.
+    paddingBottom: insets.bottom + Spacing.four,
     paddingHorizontal: Spacing.three,
   };
 

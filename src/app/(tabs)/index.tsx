@@ -57,7 +57,7 @@ export default function HomeScreen() {
           title="Six Core Programs"
           subtitle="Holistic ministry across prisons, families, and communities in Uganda."
         />
-        {Programs.map((program) => (
+        {Programs.slice(0, 3).map((program) => (
           <Card
             key={program.id}
             accent={program.color}
@@ -78,6 +78,12 @@ export default function HomeScreen() {
             </View>
           </Card>
         ))}
+        <Button
+          label="View all six programs"
+          variant="outline"
+          icon="arrow-forward"
+          onPress={() => router.push('/programs')}
+        />
       </View>
 
       <View style={styles.block}>
