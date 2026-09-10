@@ -1,9 +1,8 @@
-import { useSignUp } from '@clerk/clerk-expo';
+import { useSignIn } from '@clerk/clerk-expo';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 
-import { SocialAuth } from '@/components/social-auth';
 import { BrandMark } from '@/components/ui/brand-mark';
 import { Button } from '@/components/ui/button';
 import { Notice } from '@/components/ui/notice';
@@ -16,30 +15,26 @@ import { clerkError } from '@/lib/clerk';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function SignUpScreen() {
-  const { signUp, setActive, isLoaded } = useSignUp();
+export default function ForgotPasswordScreen() {
+  const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
   const theme = useTheme();
 
-  const [stage, setStage] = useState<'form' | 'verify'>('form');
-  const [firstName, setFirstName] = useState('');
+  const [stage, setStage] = useState<'request' | 'reset'>('request');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function onSubmit() {
+  async function onRequest() {
     if (!isLoaded) return;
-    if (!firstName.trim()) return setError('Enter your name.');
     if (!EMAIL_RE.test(email)) return setError('Enter a valid email address.');
-    if (password.length < 8) return setError('Password must be at least 8 characters.');
     setError(null);
     setLoading(true);
     try {
-      await signUp.create({ firstName: firstName.trim(), emailAddress: email.trim(), password });
-      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
-      setStage('verify');
+      await signIn.create({ strategy: 'reset_password_email_code', identifier: email.trim() });
+      setStage('reset');
     } catch (err) {
       setError(clerkError(err));
     } finally {
@@ -47,18 +42,23 @@ export default function SignUpScreen() {
     }
   }
 
-  async function onVerify() {
+  async function onReset() {
     if (!isLoaded) return;
     if (!code.trim()) return setError('Enter the 6 digit code from your email.');
+    if (password.length < 8) return setError('Password must be at least 8 characters.');
     setError(null);
     setLoading(true);
     try {
-      const attempt = await signUp.attemptEmailAddressVerification({ code: code.trim() });
+      const attempt = await signIn.attemptFirstFactor({
+        strategy: 'reset_password_email_code',
+        code: code.trim(),
+        password,
+      });
       if (attempt.status === 'complete') {
         await setActive({ session: attempt.createdSessionId });
         router.replace('/');
       } else {
-        setError('That code did not work. Please check and try again.');
+        setError('Could not reset your password. Please request a new code and try again.');
       }
     } catch (err) {
       setError(clerkError(err));
@@ -72,19 +72,20 @@ export default function SignUpScreen() {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.head}>
           <BrandMark size={44} tile />
-          <Typography kind="h1">{stage === 'form' ? 'Create your account' : 'Verify your email'}</Typography>
+          <Typography kind="h1">
+            {stage === 'request' ? 'Reset your password' : 'Choose a new password'}
+          </Typography>
           <Typography kind="muted">
-            {stage === 'form'
-              ? 'Join EECMI to save devotions and follow updates.'
-              : `We sent a 6 digit code to ${email}.`}
+            {stage === 'request'
+              ? 'Enter your account email and we will send you a reset code.'
+              : `Enter the 6 digit code we sent to ${email}, then set a new password.`}
           </Typography>
         </View>
 
         {error ? <Notice tone="error" message={error} /> : null}
 
-        {stage === 'form' ? (
+        {stage === 'request' ? (
           <View style={styles.form}>
-            <TextField label="First name" value={firstName} onChangeText={setFirstName} autoComplete="name" />
             <TextField
               label="Email"
               value={email}
@@ -93,29 +94,43 @@ export default function SignUpScreen() {
               keyboardType="email-address"
               autoComplete="email"
             />
-            <TextField label="Password" value={password} onChangeText={setPassword} secureTextEntry autoComplete="new-password" />
-            <Button label="Create account" loading={loading} onPress={onSubmit} />
+            <Button label="Send reset code" loading={loading} onPress={onRequest} />
           </View>
         ) : (
           <View style={styles.form}>
             <TextField
-              label="Verification code"
+              label="Reset code"
               value={code}
               onChangeText={setCode}
               keyboardType="number-pad"
               autoComplete="one-time-code"
             />
-            <Button label="Verify & continue" loading={loading} onPress={onVerify} />
-            <Button label="Back" variant="ghost" onPress={() => { setStage('form'); setError(null); }} />
+            <TextField
+              label="New password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoComplete="new-password"
+            />
+            <Button label="Set new password" loading={loading} onPress={onReset} />
+            <Button
+              label="Use a different email"
+              variant="ghost"
+              onPress={() => {
+                setStage('request');
+                setCode('');
+                setPassword('');
+                setError(null);
+              }}
+            />
           </View>
         )}
 
-        {stage === 'form' ? <SocialAuth onError={setError} disabled={loading} /> : null}
-
         <View style={styles.foot}>
-          <Typography kind="small" color={theme.textSecondary}>Already have an account? </Typography>
           <Link href="/(auth)/sign-in">
-            <Typography kind="small" color={theme.primary}>Sign in</Typography>
+            <Typography kind="small" color={theme.primary}>
+              Back to sign in
+            </Typography>
           </Link>
         </View>
       </KeyboardAvoidingView>

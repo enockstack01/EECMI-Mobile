@@ -3,6 +3,7 @@ import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 
+import { SocialAuth } from '@/components/social-auth';
 import { BrandMark } from '@/components/ui/brand-mark';
 import { Button } from '@/components/ui/button';
 import { Notice } from '@/components/ui/notice';
@@ -11,6 +12,7 @@ import { TextField } from '@/components/ui/text-field';
 import { Typography } from '@/components/ui/typography';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { clerkError } from '@/lib/clerk';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -72,8 +74,15 @@ export default function SignInScreen() {
             secureTextEntry
             autoComplete="current-password"
           />
+          <View style={styles.forgotRow}>
+            <Link href="/(auth)/forgot-password">
+              <Typography kind="small" color={theme.primary}>Forgot password?</Typography>
+            </Link>
+          </View>
           <Button label="Sign in" loading={loading} onPress={onSubmit} />
         </View>
+
+        <SocialAuth onError={setError} disabled={loading} />
 
         <View style={styles.foot}>
           <Typography kind="small" color={theme.textSecondary}>
@@ -88,13 +97,9 @@ export default function SignInScreen() {
   );
 }
 
-export function clerkError(err: unknown): string {
-  const e = err as { errors?: { longMessage?: string; message?: string }[] };
-  return e?.errors?.[0]?.longMessage || e?.errors?.[0]?.message || 'Something went wrong. Please try again.';
-}
-
 const styles = StyleSheet.create({
   head: { gap: Spacing.two, alignItems: 'flex-start', marginBottom: Spacing.two },
   form: { gap: Spacing.three },
-  foot: { flexDirection: 'row', alignItems: 'center', marginTop: Spacing.three },
+  forgotRow: { alignItems: 'flex-end', marginTop: -Spacing.two },
+  foot: { flexDirection: 'row', alignItems: 'center', marginTop: Spacing.three, flexWrap: 'wrap' },
 });
