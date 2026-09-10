@@ -61,13 +61,14 @@
     },
     "experiments": {
       "typedRoutes": false,
-      "reactCompiler": true
+      "reactCompiler": false
     },
     "extra": {
       "router": {},
       "eas": {
         "projectId": "fdfa43b9-2b09-4418-bc31-104c7d06ca29"
-      }
+      },
+      "clerkPublishableKey": "pk_test_cmVuZXdpbmctZ29vc2UtMC5jbGVyay5hY2NvdW50cy5kZXYk"
     }
   }
 }
