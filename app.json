@@ -50,9 +50,12 @@
       ],
       "expo-secure-store",
       "expo-sharing",
-      "expo-audio"
+      "expo-audio",
+      "expo-asset"
     ],
-    "runtimeVersion": { "policy": "appVersion" },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "updates": {
       "url": "https://u.expo.dev/fdfa43b9-2b09-4418-bc31-104c7d06ca29"
     },
