@@ -15,10 +15,12 @@ type CardProps = {
   onPress?: () => void;
   /** Left accent stripe colour. */
   accent?: string;
+  /** Edge-to-edge content (e.g. a cover image) rendered above the padded body. */
+  media?: ReactNode;
   style?: StyleProp<ViewStyle>;
 };
 
-export function Card({ children, onPress, accent, style }: CardProps) {
+export function Card({ children, onPress, accent, media, style }: CardProps) {
   const theme = useTheme();
 
   const body = (
@@ -29,7 +31,8 @@ export function Card({ children, onPress, accent, style }: CardProps) {
         accent ? { borderLeftColor: accent, borderLeftWidth: 4 } : null,
         style,
       ]}>
-      {children}
+      {media ? <View style={styles.media}>{media}</View> : null}
+      <View style={styles.body}>{children}</View>
     </View>
   );
 
@@ -49,6 +52,10 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: Radius.md,
     borderWidth: 1,
+    overflow: 'hidden',
+  },
+  media: { aspectRatio: 16 / 10 },
+  body: {
     padding: Spacing.three,
     gap: Spacing.two,
   },

@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { Image } from 'expo-image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, RefreshControl, StyleSheet, View } from 'react-native';
 
@@ -10,7 +11,7 @@ import { Notice } from '@/components/ui/notice';
 import { Screen } from '@/components/ui/screen';
 import { SectionHeader } from '@/components/ui/section-header';
 import { Typography } from '@/components/ui/typography';
-import { Brand, Spacing } from '@/constants/theme';
+import { Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { ApiError, getDevotions, type Devotion } from '@/lib/api';
 
@@ -18,6 +19,7 @@ const TYPE_ICON: Record<Devotion['type'], keyof typeof Ionicons.glyphMap> = {
   text: 'book-outline',
   pdf: 'document-text-outline',
   document: 'document-attach-outline',
+  image: 'image-outline',
   audio: 'headset-outline',
   video: 'videocam-outline',
   link: 'link-outline',
@@ -101,26 +103,38 @@ export default function DevotionsScreen() {
         </Card>
       ) : null}
 
-      {filtered.map((d) => (
-        <Card
-          key={d.id}
-          accent={Brand.forest}
-          onPress={() => router.push({ pathname: '/devotion/[id]', params: { id: d.id } })}>
-          <View style={styles.rowTop}>
-            <View style={[styles.iconWrap, { backgroundColor: theme.backgroundElement }]}>
-              <Ionicons name={TYPE_ICON[d.type] ?? 'book-outline'} size={16} color={theme.primary} />
+      {filtered.map((d) => {
+        const imageUrl = (d.type === 'image' && d.fileUrl) || d.coverImageUrl;
+        const icon = TYPE_ICON[d.type] ?? 'book-outline';
+        return (
+          <Card
+            key={d.id}
+            media={
+              <View style={styles.mediaBox}>
+                {imageUrl ? (
+                  <Image source={{ uri: imageUrl }} style={styles.mediaImage} contentFit="cover" />
+                ) : (
+                  <View style={[styles.mediaImage, styles.mediaPlaceholder, { backgroundColor: theme.primary }]}>
+                    <Ionicons name={icon} size={32} color="rgba(255,255,255,0.85)" />
+                  </View>
+                )}
+                <View style={styles.mediaBadge}>
+                  <Ionicons name={icon} size={11} color="#fff" />
+                  <Typography kind="small" color="#fff" style={styles.mediaBadgeText}>{d.series || 'Devotion'}</Typography>
+                </View>
+              </View>
+            }
+            onPress={() => router.push({ pathname: '/devotion/[id]', params: { id: d.id } })}>
+            <Typography kind="h3">{d.title}</Typography>
+            {d.scriptureRef ? <Typography kind="small" color={theme.accent}>{d.scriptureRef}</Typography> : null}
+            {d.description ? <Typography kind="muted">{d.description}</Typography> : null}
+            <View style={styles.link}>
+              <Ionicons name="arrow-forward" size={14} color={theme.primary} />
+              <Typography kind="small" color={theme.primary}>Open</Typography>
             </View>
-            <Typography kind="eyebrow" color={theme.primary} style={styles.series}>{d.series || 'Devotion'}</Typography>
-          </View>
-          <Typography kind="h3">{d.title}</Typography>
-          {d.scriptureRef ? <Typography kind="small" color={theme.accent}>{d.scriptureRef}</Typography> : null}
-          {d.description ? <Typography kind="muted">{d.description}</Typography> : null}
-          <View style={styles.link}>
-            <Ionicons name="arrow-forward" size={14} color={theme.primary} />
-            <Typography kind="small" color={theme.primary}>Open</Typography>
-          </View>
-        </Card>
-      ))}
+          </Card>
+        );
+      })}
     </Screen>
   );
 }
@@ -128,8 +142,15 @@ export default function DevotionsScreen() {
 const styles = StyleSheet.create({
   center: { alignItems: 'center', gap: Spacing.two, paddingVertical: Spacing.five },
   stateBlock: { gap: Spacing.three },
-  rowTop: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
-  iconWrap: { width: 32, height: 32, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
-  series: { flex: 1 },
+  mediaBox: { flex: 1 },
+  mediaImage: { width: '100%', height: '100%' },
+  mediaPlaceholder: { alignItems: 'center', justifyContent: 'center' },
+  mediaBadge: {
+    position: 'absolute', top: 10, left: 10,
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.one,
+    backgroundColor: 'rgba(0,0,0,0.55)', paddingHorizontal: Spacing.two, paddingVertical: Spacing.half,
+    borderRadius: Radius.pill,
+  },
+  mediaBadgeText: { fontSize: 11, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase' },
   link: { flexDirection: 'row', alignItems: 'center', gap: Spacing.one, marginTop: Spacing.one },
 });

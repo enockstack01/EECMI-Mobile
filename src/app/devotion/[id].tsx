@@ -2,6 +2,7 @@ import { useAuth } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { useAudioPlayer } from 'expo-audio';
 import { Directory, File, Paths } from 'expo-file-system';
+import { Image } from 'expo-image';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import * as WebBrowser from 'expo-web-browser';
@@ -13,7 +14,7 @@ import { Card } from '@/components/ui/card';
 import { Notice } from '@/components/ui/notice';
 import { Screen } from '@/components/ui/screen';
 import { Typography } from '@/components/ui/typography';
-import { Spacing } from '@/constants/theme';
+import { Radius, Spacing } from '@/constants/theme';
 import { useApi } from '@/hooks/use-api';
 import { useTheme } from '@/hooks/use-theme';
 import { ApiError, getDevotion, recordDevotionDownload, type Devotion } from '@/lib/api';
@@ -132,6 +133,7 @@ export default function DevotionDetailScreen() {
 
   const url = devotion.fileUrl || devotion.externalUrl;
   const isAudio = devotion.type === 'audio';
+  const isImage = devotion.type === 'image';
 
   return (
     <Screen>
@@ -143,6 +145,10 @@ export default function DevotionDetailScreen() {
         {devotion.scriptureRef ? <Typography kind="lead" color={theme.accent}>{devotion.scriptureRef}</Typography> : null}
         {devotion.author ? <Typography kind="small" color={theme.textSecondary}>By {devotion.author}</Typography> : null}
       </View>
+
+      {devotion.coverImageUrl ? (
+        <Image source={{ uri: devotion.coverImageUrl }} style={styles.coverImage} contentFit="cover" />
+      ) : null}
 
       {isSignedIn ? (
         <Pressable
@@ -165,6 +171,10 @@ export default function DevotionDetailScreen() {
           ? <Typography kind="body">{devotion.description}</Typography>
           : null}
 
+      {isImage && (localUri || url) ? (
+        <Image source={{ uri: (localUri || url) as string }} style={styles.inlineImage} contentFit="cover" />
+      ) : null}
+
       {isAudio && (localUri || url) ? (
         <Card>
           <View style={styles.audioRow}>
@@ -183,7 +193,9 @@ export default function DevotionDetailScreen() {
 
       {url && !isAudio ? (
         <Card style={styles.fileCard}>
-          <Typography kind="h3">{devotion.type === 'link' ? 'External resource' : 'Attached file'}</Typography>
+          <Typography kind="h3">
+            {devotion.type === 'link' ? 'External resource' : isImage ? 'Full image' : 'Attached file'}
+          </Typography>
           {localUri ? (
             <Typography kind="small" color={theme.success}>Saved on this device — available offline.</Typography>
           ) : null}
@@ -207,6 +219,8 @@ export default function DevotionDetailScreen() {
 const styles = StyleSheet.create({
   center: { alignItems: 'center', paddingVertical: Spacing.six },
   head: { gap: Spacing.two },
+  coverImage: { width: '100%', height: 200, borderRadius: Radius.lg },
+  inlineImage: { width: '100%', aspectRatio: 4 / 3, borderRadius: Radius.md },
   saveBtn: {
     alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: Spacing.one,
     borderWidth: 1, borderRadius: 999, paddingHorizontal: Spacing.three, paddingVertical: Spacing.one + 2,
