@@ -17,6 +17,7 @@ import { ApiError, getDevotions, type Devotion } from '@/lib/api';
 const TYPE_ICON: Record<Devotion['type'], keyof typeof Ionicons.glyphMap> = {
   text: 'book-outline',
   pdf: 'document-text-outline',
+  document: 'document-attach-outline',
   audio: 'headset-outline',
   video: 'videocam-outline',
   link: 'link-outline',

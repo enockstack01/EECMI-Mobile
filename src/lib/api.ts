@@ -161,7 +161,7 @@ export type Devotion = {
   description?: string;
   scriptureRef?: string;
   body?: string;
-  type: 'text' | 'pdf' | 'audio' | 'video' | 'link';
+  type: 'text' | 'pdf' | 'document' | 'audio' | 'video' | 'link';
   fileUrl?: string;
   externalUrl?: string;
   coverImageUrl?: string;
