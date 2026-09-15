@@ -146,7 +146,7 @@ export default function DevotionDetailScreen() {
         {devotion.author ? <Typography kind="small" color={theme.textSecondary}>By {devotion.author}</Typography> : null}
       </View>
 
-      {devotion.coverImageUrl ? (
+      {devotion.coverImageUrl && !isImage ? (
         <Image source={{ uri: devotion.coverImageUrl }} style={styles.coverImage} contentFit="cover" />
       ) : null}
 
@@ -172,7 +172,9 @@ export default function DevotionDetailScreen() {
           : null}
 
       {isImage && (localUri || url) ? (
-        <Image source={{ uri: (localUri || url) as string }} style={styles.inlineImage} contentFit="cover" />
+        <View style={[styles.imageFrame, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
+          <Image source={{ uri: (localUri || url) as string }} style={styles.inlineImage} contentFit="contain" />
+        </View>
       ) : null}
 
       {isAudio && (localUri || url) ? (
@@ -220,7 +222,10 @@ const styles = StyleSheet.create({
   center: { alignItems: 'center', paddingVertical: Spacing.six },
   head: { gap: Spacing.two },
   coverImage: { width: '100%', height: 200, borderRadius: Radius.lg },
-  inlineImage: { width: '100%', aspectRatio: 4 / 3, borderRadius: Radius.md },
+  imageFrame: {
+    borderWidth: 1, borderRadius: Radius.lg, padding: Spacing.two, alignItems: 'center',
+  },
+  inlineImage: { width: '100%', height: 480, borderRadius: Radius.sm },
   saveBtn: {
     alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: Spacing.one,
     borderWidth: 1, borderRadius: 999, paddingHorizontal: Spacing.three, paddingVertical: Spacing.one + 2,
